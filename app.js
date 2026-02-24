@@ -32,6 +32,7 @@ adLayer.style.transitionDuration = `${FADE_MS}ms`;
 })();
 
 function setStatus(text){ statusEl.textContent = text; }
+
 function normalizeBool(v){
   const s = String(v ?? "").trim().toLowerCase();
   return s === "true" || s === "1" || s === "yes" || s === "y";
@@ -59,84 +60,100 @@ function groupMenu(rows){
   return sections;
 }
 
-// Default positions — tune later
-const L = { x: 90, w: 820 };
-const R = { x: 1010, w: 820 };
-const TOP = 150;
-const GAP = 48;
 
-const SCREEN_LAYOUT = {
-  "1": { left: ["Fish","Sausages","Chips"], right: ["Chicken","Pies"] },
-  "2": { left: ["Burgers","Kids Meals"], right: ["Classic Sides","Extras"] },
-  "3": { left: ["Drinks","Sauces"], right: ["New","Box Meals"] },
-};
+/* =========================
+   SECTION POSITIONING ZONES
+   ========================= */
 
 function render(sections){
   overlay.innerHTML = "";
-  const layout = SCREEN_LAYOUT[String(screen)] || { left: [], right: [] };
-  const rightNames = new Set(layout.right);
 
-  const left = [];
-  const right = [];
-  for (const s of sections) (rightNames.has(s.name) ? right : left).push(s);
+  const ZONES = {
 
-  const renderCol = (col, colPos, namesOrder) => {
-    let y = TOP;
-    const ordered = [];
-    for (const nm of namesOrder) {
-      const found = col.find(s => s.name === nm);
-      if (found) ordered.push(found);
-    }
-    for (const s of col) if (!ordered.includes(s)) ordered.push(s);
+    /* SCREEN 1 (Fish, Sausages, Chicken, Pies, Chips) */
+    "1": {
+      "Sausages": { x: 140, y: 260, w: 760 },
+      "Chicken":  { x: 1000, y: 260, w: 760 },
+      "Pies":     { x: 140, y: 700, w: 760 },
+      "Chips":    { x: 1000, y: 700, w: 760 },
+      "Fish":     { x: 1350, y: 360, w: 500 }
+    },
 
-    for (const s of ordered) {
-      const box = document.createElement("div");
-      box.className = "section";
-      box.style.left = colPos.x + "px";
-      box.style.top = y + "px";
-      box.style.width = colPos.w + "px";
+    /* SCREEN 2 (Burgers, Kids, Sides) */
+    "2": {
+      "Burgers":        { x: 180, y: 240, w: 700 },
+      "Kids Meals":     { x: 980, y: 240, w: 760 },
+      "Classic Sides":  { x: 980, y: 520, w: 760 },
+      "Sides":          { x: 980, y: 520, w: 760 }
+    },
 
-      for (const it of s.items) {
-        const line = document.createElement("div");
-        line.className = "item";
-
-        const name = document.createElement("div");
-        name.className = "name";
-        const qual = (it.qualifier || "").trim();
-        name.innerHTML = qual ? `${it.item} <span class="qualifier">(${qual})</span>` : `${it.item}`;
-
-        const price = document.createElement("div");
-        price.className = "price";
-        const p1 = (it.price ?? "").trim();
-        const p2 = (it.price_2 ?? "").trim();
-        const label = (it.price_label ?? "").trim();
-
-        if (p2) {
-          if (label.includes("|")) {
-            const parts = label.split("|").map(x => x.trim());
-            const a = parts[0] || "A";
-            const b = parts[1] || "B";
-            price.textContent = `${a} ${money(p1)} | ${b} ${money(p2)}`;
-          } else {
-            price.textContent = `${money(p1)} / ${money(p2)}`;
-          }
-        } else {
-          price.textContent = money(p1);
-        }
-
-        line.appendChild(name);
-        line.appendChild(price);
-        box.appendChild(line);
-      }
-
-      overlay.appendChild(box);
-      y += box.scrollHeight + GAP;
+    /* SCREEN 3 (Drinks, Dip Pots, Extras, New, Box Meals) */
+    "3": {
+      "Drinks":    { x: 160, y: 240, w: 700 },
+      "Dip Pots":  { x: 960, y: 240, w: 760 },
+      "Sauces":    { x: 960, y: 240, w: 760 },
+      "Extras":    { x: 160, y: 620, w: 700 },
+      "New":       { x: 960, y: 640, w: 760 },
+      "Box Meals": { x: 1320, y: 360, w: 540 }
     }
   };
 
-  renderCol(left, L, layout.left);
-  renderCol(right, R, layout.right);
+  const zones = ZONES[String(screen)] || {};
+
+  for (const s of sections) {
+    const z = zones[s.name];
+    if (!z) continue;
+
+    const box = document.createElement("div");
+    box.className = "section";
+    box.style.left = z.x + "px";
+    box.style.top = z.y + "px";
+    box.style.width = z.w + "px";
+
+    for (const it of s.items) {
+
+      const line = document.createElement("div");
+      line.className = "item";
+
+      const name = document.createElement("div");
+      name.className = "name";
+
+      const qual = (it.qualifier || "").trim();
+      name.innerHTML = qual
+        ? `${it.item} <span class="qualifier">(${qual})</span>`
+        : `${it.item}`;
+
+      const price = document.createElement("div");
+      price.className = "price";
+
+      const p1 = (it.price ?? "").trim();
+      const p2 = (it.price_2 ?? "").trim();
+      const label = (it.price_label ?? "").trim();
+
+      if (p2) {
+        if (label.includes("|")) {
+          const parts = label.split("|").map(x => x.trim());
+          price.textContent = `${parts[0]} ${money(p1)} | ${parts[1]} ${money(p2)}`;
+        } else {
+          price.textContent = `${money(p1)} / ${money(p2)}`;
+        }
+      } else {
+        price.textContent = money(p1);
+      }
+
+      line.appendChild(name);
+      line.appendChild(price);
+      box.appendChild(line);
+    }
+
+    overlay.appendChild(box);
+  }
 }
+
+
+/* =========================
+   DATA LOADING
+   ========================= */
 
 async function fetchCSV(url){
   const res = await fetch(url, { cache: "no-store" });
@@ -151,7 +168,6 @@ async function loadData(){
   let lastUpdated = "";
 
   try {
-    if (!MENU_CSV_URL) throw new Error("MENU_CSV_URL not set");
     const csv = await fetchCSV(MENU_CSV_URL);
     menuRows = parseCSV(csv);
     localStorage.setItem(`menu_csv_${screen}`, csv);
@@ -167,7 +183,6 @@ async function loadData(){
   }
 
   try {
-    if (!ADVERTS_CSV_URL) throw new Error("ADVERTS_CSV_URL not set");
     const csv = await fetchCSV(ADVERTS_CSV_URL);
     adsRows = parseCSV(csv);
     localStorage.setItem(`ads_csv_${screen}`, csv);
@@ -178,6 +193,11 @@ async function loadData(){
 
   return { menuRows, adsRows, offline, lastUpdated };
 }
+
+
+/* =========================
+   ADVERT LOGIC (unchanged)
+   ========================= */
 
 function getAdsForScreen(adsRows){
   return adsRows
@@ -198,26 +218,21 @@ function isAdWindow(nowMs){
   const cycleMs = (MENU_SECONDS + AD_SECONDS) * 1000;
   return (nowMs % cycleMs) >= MENU_SECONDS * 1000;
 }
+
 function adIndex(nowMs, adCount){
   const cycleMs = (MENU_SECONDS + AD_SECONDS) * 1000;
   const cycle = Math.floor(nowMs / cycleMs);
   return adCount ? (cycle % adCount) : 0;
 }
+
 function playAd(file){
   const lower = (file || "").toLowerCase();
-  if (lower.endsWith(".mp4") || lower.endsWith(".webm")) {
+  if (lower.endsWith(".mp4")) {
     adImg.style.display = "none";
     adVideo.style.display = "block";
     adVideo.src = `assets/${file}`;
     adVideo.currentTime = 0;
     adVideo.play().catch(()=>{});
-  } else if (file) {
-    adVideo.pause();
-    adVideo.removeAttribute("src");
-    adVideo.load();
-    adVideo.style.display = "none";
-    adImg.style.display = "block";
-    adImg.src = `assets/${file}`;
   }
 }
 
@@ -235,10 +250,12 @@ async function main(){
   setStatus(`Last updated: ${lastUpdated || "—"} • ${offline ? "Offline" : "Online"}`);
 
   let lastMode = null;
+
   setInterval(() => {
     const now = Date.now();
     const inAd = adsEnabled && ads.length && isAdWindow(now);
     const mode = inAd ? "ad" : "menu";
+
     if (mode !== lastMode) {
       if (mode === "ad") {
         const idx = adIndex(now, ads.length);
@@ -256,4 +273,4 @@ async function main(){
   }, 60000);
 }
 
-main().catch(() => setStatus("Error: set MENU_CSV_URL in config.js"));
+main().catch(() => setStatus("Error loading menu"));
