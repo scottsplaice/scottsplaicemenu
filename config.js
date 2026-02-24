@@ -17,4 +17,4 @@ export const ENABLE_ADS_BY_DEFAULT = false;
 
 
 // Cache / offline
-export const CACHE_VERSION = "v1";
+export const CACHE_VERSION = "v2";
