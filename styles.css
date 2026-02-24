@@ -1,0 +1,32 @@
+
+html, body { height: 100%; margin: 0; background: #000; overflow: hidden;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+
+#root { position: relative; width: 100vw; height: 100vh; }
+
+.layer { position: absolute; inset: 0; width: 100%; height: 100%;
+  opacity: 0; transition: opacity 350ms linear; }
+
+.layer.show { opacity: 1; }
+
+video, img { width: 100%; height: 100%; object-fit: cover; }
+
+#overlay { position: absolute; inset: 0; pointer-events: none; }
+
+/* Tune these per-screen once MP4s are in place */
+.section { position: absolute; display: flex; flex-direction: column; gap: 10px;
+  color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,.65); }
+
+.item { display: flex; justify-content: space-between; align-items: baseline;
+  gap: 14px; font-size: 34px; line-height: 1.05; font-weight: 700; }
+
+.item .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  max-width: 70%; }
+
+.item .price { white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+.item .qualifier { font-weight: 600; opacity: .9; }
+
+#status { position: absolute; right: 24px; bottom: 18px; color: rgba(255,255,255,.85);
+  font-size: 18px; text-shadow: 0 2px 6px rgba(0,0,0,.6);
+  background: rgba(0,0,0,.25); padding: 6px 10px; border-radius: 10px; }

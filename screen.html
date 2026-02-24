@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Menu Screen</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="root">
+      <div id="menuLayer" class="layer show">
+        <video id="menuBg" autoplay muted playsinline loop></video>
+        <div id="overlay"></div>
+        <div id="status"></div>
+      </div>
+
+      <div id="adLayer" class="layer">
+        <video id="adVideo" autoplay muted playsinline></video>
+        <img id="adImg" alt="" style="display:none"/>
+      </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
