@@ -72,11 +72,11 @@ function render(sections){
 
     /* SCREEN 1 (Fish, Sausages, Chicken, Pies, Chips) */
     "1": {
-      "Sausages": { x: 140, y: 260, w: 760 },
-      "Chicken":  { x: 1000, y: 260, w: 760 },
-      "Pies":     { x: 140, y: 700, w: 760 },
-      "Chips":    { x: 1000, y: 700, w: 760 },
-      "Fish":     { x: 1350, y: 360, w: 500 }
+      "Sausages": { x: 180, y: 200, w: 700 },
+      "Chicken":  { x: 1040, y: 200, w: 700 },
+      "Pies":     { x: 180, y: 620, w: 700 },
+      "Chips":    { x: 1040, y: 620, w: 700 },
+      "Fish":     { x: 1180, y: 420, w: 480 }
     },
 
     /* SCREEN 2 (Burgers, Kids, Sides) */
